@@ -5,10 +5,12 @@ from datetime import datetime
 from app import db
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'users'  # 避免與 PostgreSQL 保留字衝突
+
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)  # 用戶名稱（不能改）
-    password_hash = db.Column(db.String(128), nullable=False)  # 儲存 hash 後的密碼
-    email = db.Column(db.String(120), unique=True)  # 可選：加 email
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(120), unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -17,16 +19,16 @@ class User(db.Model, UserMixin):
 class VerificationCode(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(32), unique=True, nullable=False)
-    used = db.Column(db.Boolean, default=False)  # 一次性使用
+    used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Sheet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)  # 歌曲名稱
-    author = db.Column(db.String(100), nullable=False)  # 作者
-    lyrics = db.Column(db.Text)  # 歌詞（可用於搜尋）
-    filename = db.Column(db.String(200), nullable=False)  # PDF 檔名（實際儲存用）
-    uploader_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 上傳者 ID
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    title = db.Column(db.String(100), nullable=False)
+    author = db.Column(db.String(100), nullable=False)
+    lyrics = db.Column(db.Text)
+    filename = db.Column(db.String(200), nullable=False)
+    uploader_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     uploader = db.relationship('User', backref='sheets')
