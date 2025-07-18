@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}搜尋樂譜{% endblock %}
+{% block content %}
+<h2>搜尋樂譜</h2>
+<form method="GET">
+  <input class="form-control mb-3" name="query" placeholder="輸入 標題、作者 或 歌詞">
+  <button type="submit" class="btn btn-outline-success">搜尋</button>
+</form>
+
+{% if results %}
+  <ul class="list-group mt-4">
+    {% for sheet in results %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>{{ sheet.title }} by {{ sheet.author }}</span>
+      <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('static', filename='sheets/' + sheet.filename) }}" download>下載</a>
+    </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

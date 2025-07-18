@@ -20,18 +20,22 @@ from models import User
 from auth import auth_bp
 from upload import upload_bp
 from search import search_bp
+from dashboard import dashboard_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(upload_bp)
 app.register_blueprint(search_bp)
+app.register_blueprint(dashboard_bp)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+from flask import render_template  # 確保這行有加
+
 @app.route('/')
 def home():
-    return 'Welcome to Piano Sheet Archive!'
+    return render_template('home.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

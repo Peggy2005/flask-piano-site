@@ -1,10 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}上傳樂譜{% endblock %}
+{% block content %}
+<h2>上傳新的鋼琴譜</h2>
+<form method="POST" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label class="form-label">標題</label>
+    <input class="form-control" name="title" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">作者</label>
+    <input class="form-control" name="author" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">歌詞（可選）</label>
+    <textarea class="form-control" name="lyrics"></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">上傳 PDF 檔</label>
+    <input type="file" class="form-control" name="file" accept=".pdf" required>
+  </div>
+  <button type="submit" class="btn btn-primary">上傳</button>
+</form>
+{% endblock %}
