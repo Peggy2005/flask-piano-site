@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block title %}首頁{% endblock %}
 {% block content %}
-<h1>🎵 歡迎來到 Piano Sheet Archive</h1>
-<p>這裡可以註冊、登入、上傳和搜尋鋼琴樂譜。</p>
+<div class="text-center mt-5">
+  <h1>🎵 歡迎來到 Piano Sheet Archive</h1>
+  <p class="lead">這裡可以註冊、登入、上傳和搜尋鋼琴樂譜。</p>
+  <div class="d-grid gap-2 col-6 mx-auto mt-4">
+    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">註冊</a>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">登入</a>
+    <a href="{{ url_for('upload.upload') }}" class="btn btn-success btn-lg">上傳樂譜</a>
+    <a href="{{ url_for('search.search') }}" class="btn btn-info btn-lg">搜尋樂譜</a>
+    <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary btn-lg">我的樂譜</a>
+  </div>
+</div>
 {% endblock %}
