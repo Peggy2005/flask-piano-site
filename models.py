@@ -17,12 +17,14 @@ class User(db.Model, UserMixin):
         return f'<User {self.username}>'
 
 class VerificationCode(db.Model):
+    __tablename__ = 'verification_codes'
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(32), unique=True, nullable=False)
     used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Sheet(db.Model):
+    __tablename__ = 'sheets'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)

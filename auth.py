@@ -5,8 +5,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from models import User, VerificationCode
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__)  # ✅ 注意：這裡不能加句號
 
+# 註冊
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -14,17 +15,18 @@ def register():
         password = request.form['password']
         code = request.form['code']
 
-        # 檢查驗證碼是否存在且尚未使用
+        # 檢查驗證碼
         verification = VerificationCode.query.filter_by(code=code, used=False).first()
         if not verification:
             flash('驗證碼無效或已被使用')
             return redirect(url_for('auth.register'))
 
-        # 檢查是否重複帳號
+        # 檢查重複帳號
         if User.query.filter_by(username=username).first():
             flash('帳號名稱已被使用')
             return redirect(url_for('auth.register'))
 
+        # 建立使用者
         hashed_password = generate_password_hash(password)
         user = User(username=username, password_hash=hashed_password)
         db.session.add(user)
@@ -36,12 +38,13 @@ def register():
 
     return render_template('register.html')
 
-
+# 登入
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         user = User.query.filter_by(username=username).first()
         if not user or not check_password_hash(user.password_hash, password):
             flash('帳號或密碼錯誤')
@@ -53,7 +56,7 @@ def login():
 
     return render_template('login.html')
 
-
+# 登出
 @auth_bp.route('/logout')
 @login_required
 def logout():
@@ -61,7 +64,7 @@ def logout():
     flash('您已登出')
     return redirect(url_for('auth.login'))
 
-
+# 修改密碼
 @auth_bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():

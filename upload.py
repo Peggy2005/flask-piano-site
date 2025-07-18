@@ -23,9 +23,15 @@ def upload():
             os.makedirs(UPLOAD_FOLDER, exist_ok=True)
             file.save(save_path)
 
-            sheet = Sheet(title=title, author=author, lyrics=lyrics, filename=filename, uploader=current_user)
+            sheet = Sheet(
+                title=title,
+                author=author,
+                lyrics=lyrics,
+                filename=filename,
+                uploader_id=current_user.id  # ✅ 修正這裡：直接指定 uploader_id
+            )
             db.session.add(sheet)
             db.session.commit()
-            return redirect(url_for('search.search'))
+            return redirect(url_for('dashboard.dashboard'))  # ✅ 上傳成功導向「我的樂譜」
 
     return render_template('upload.html')

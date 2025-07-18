@@ -1,9 +1,21 @@
 {% extends "base.html" %}
 {% block title %}搜尋樂譜{% endblock %}
+
 {% block content %}
-<h2>搜尋樂譜</h2>
-<form method="GET">
-  <input class="form-control mb-3" name="query" placeholder="輸入 標題、作者 或 歌詞">
+<h2 class="mb-4">搜尋樂譜</h2>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-warning">
+      {% for message in messages %}
+        <div>{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<form method="POST">
+  <input class="form-control mb-3" name="keyword" placeholder="輸入 標題、作者 或 歌詞" value="{{ request.form.keyword or '' }}" autofocus>
   <button type="submit" class="btn btn-outline-success">搜尋</button>
 </form>
 
@@ -12,9 +24,11 @@
     {% for sheet in results %}
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span>{{ sheet.title }} by {{ sheet.author }}</span>
-      <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('static', filename='sheets/' + sheet.filename) }}" download>下載</a>
+      <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('search.download', id=sheet.id) }}">下載</a>
     </li>
     {% endfor %}
   </ul>
+{% elif results is not none %}
+  <p class="text-muted mt-4">😢 找不到符合條件的樂譜。</p>
 {% endif %}
 {% endblock %}

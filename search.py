@@ -8,17 +8,17 @@ search_bp = Blueprint('search', __name__)
 def search():
     results = []
     if request.method == 'POST':
-        keyword = request.form['keyword']
-        results = Sheet.query.filter(
-            (Sheet.title.ilike(f'%{keyword}%')) |
-            (Sheet.lyrics.ilike(f'%{keyword}%')) |
-            (Sheet.author.ilike(f'%{keyword}%'))
-        ).all()
+        keyword = request.form['keyword'].strip()
+        if keyword:
+            results = Sheet.query.filter(
+                (Sheet.title.ilike(f'%{keyword}%')) |
+                (Sheet.lyrics.ilike(f'%{keyword}%')) |
+                (Sheet.author.ilike(f'%{keyword}%'))
+            ).all()
     return render_template('search.html', results=results)
 
-@search_bp.route('/download/<int:id>')
+@search_bp.route('/search/download/<int:id>')
 def download(id):
     sheet = Sheet.query.get_or_404(id)
-    filename = sheet.filename
     filepath = os.path.join('static', 'sheets')
-    return send_from_directory(filepath, filename, as_attachment=True)
+    return send_from_directory(filepath, sheet.filename, as_attachment=True)

@@ -1,7 +1,18 @@
 {% extends "base.html" %}
 {% block title %}上傳樂譜{% endblock %}
 {% block content %}
-<h2>上傳新的鋼琴譜</h2>
+<h2 class="mb-4">上傳新的鋼琴譜</h2>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-warning">
+      {% for message in messages %}
+        <div>{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
 <form method="POST" enctype="multipart/form-data">
   <div class="mb-3">
     <label class="form-label">標題</label>
@@ -13,7 +24,7 @@
   </div>
   <div class="mb-3">
     <label class="form-label">歌詞（可選）</label>
-    <textarea class="form-control" name="lyrics"></textarea>
+    <textarea class="form-control" name="lyrics" rows="3"></textarea>
   </div>
   <div class="mb-3">
     <label class="form-label">上傳 PDF 檔</label>

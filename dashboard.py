@@ -1,5 +1,3 @@
-# dashboard.py
-
 from flask import Blueprint, render_template, send_from_directory
 from flask_login import login_required, current_user
 from models import Sheet
