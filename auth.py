@@ -11,32 +11,48 @@ auth_bp = Blueprint('auth', __name__)  # ✅ 注意：這裡不能加句號
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        code = request.form['code']
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+        code = request.form['code'].strip()
+
+        # 基本欄位檢查
+        if not username or not password or not code:
+            flash('所有欄位皆為必填')
+            return redirect(url_for('auth.register'))
+
+        print(f"收到註冊請求：username={username}, code={code}")
 
         # 檢查驗證碼
         verification = VerificationCode.query.filter_by(code=code, used=False).first()
+        print("驗證碼查詢結果：", verification)
+
         if not verification:
             flash('驗證碼無效或已被使用')
             return redirect(url_for('auth.register'))
 
-        # 檢查重複帳號
+        # 檢查是否帳號已存在
         if User.query.filter_by(username=username).first():
             flash('帳號名稱已被使用')
             return redirect(url_for('auth.register'))
 
-        # 建立使用者
+        # 建立新使用者
         hashed_password = generate_password_hash(password)
         user = User(username=username, password_hash=hashed_password)
-        db.session.add(user)
-        verification.used = True
-        db.session.commit()
 
-        flash('註冊成功！請登入')
-        return redirect(url_for('auth.login'))
+        try:
+            db.session.add(user)
+            verification.used = True
+            db.session.commit()
+            flash('註冊成功！請登入')
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            db.session.rollback()
+            print("資料庫寫入失敗：", e)
+            flash('註冊失敗，請稍後再試')
+            return redirect(url_for('auth.register'))
 
     return render_template('register.html')
+
 
 # 登入
 @auth_bp.route('/login', methods=['GET', 'POST'])
