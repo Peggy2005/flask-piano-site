@@ -16,15 +16,11 @@
 <form method="POST">
   <div class="mb-3">
     <label class="form-label">使用者名稱</label>
-    <input class="form-control" name="username" required>
+    <input class="form-control" name="username" autocomplete="username" required>
   </div>
   <div class="mb-3">
     <label class="form-label">密碼</label>
-    <input type="password" class="form-control" name="password" required>
-  </div>
-  <div class="mb-3">
-    <label class="form-label">驗證碼（一次性）</label>
-    <input class="form-control" name="code" required>
+    <input type="password" class="form-control" name="password" autocomplete="new-password" required>
   </div>
   <button class="btn btn-success" type="submit">註冊</button>
 </form>

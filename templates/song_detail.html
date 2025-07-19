@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}鋼琴譜詳情{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ sheet.title }}</h2>
+  <p><strong>作者：</strong>{{ sheet.author }}</p>
+  <p><strong>歌詞：</strong></p>
+  <pre>{{ sheet.lyrics }}</pre>
+
+  <a href="{{ url_for('search.download', id=sheet.id) }}" class="btn btn-success" target="_blank">
+    下載 PDF
+  </a>
+</div>
+{% endblock %}

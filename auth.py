@@ -3,52 +3,32 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
-from models import User, VerificationCode
-from sqlalchemy.exc import SQLAlchemyError
-auth_bp = Blueprint('auth', __name__)  # ✅ 注意：這裡不能加句號
+from models import User
 
-# 註冊
+auth_bp = Blueprint('auth', __name__)
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        code = request.form['code']
 
-        try:
-            # 檢查驗證碼
-            verification = VerificationCode.query.filter_by(code=code, used=False).first()
-            if not verification:
-                flash('驗證碼無效或已被使用')
-                return redirect(url_for('auth.register'))
-
-            # 檢查帳號是否重複
-            if User.query.filter_by(username=username).first():
-                flash('帳號名稱已被使用')
-                return redirect(url_for('auth.register'))
-
-            # 創建使用者
-            hashed_password = generate_password_hash(password)
-            user = User(username=username, password_hash=hashed_password)
-            db.session.add(user)
-
-            # 標記驗證碼已使用
-            verification.used = True
-
-            db.session.commit()
-            flash('註冊成功！請登入')
-            return redirect(url_for('auth.login'))
-
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            print(f"[註冊錯誤] {e}")  # 可以加上 log
-            flash('註冊失敗，請稍後再試')
+        if User.query.filter_by(username=username).first():
+            flash('帳號名稱已被使用')
             return redirect(url_for('auth.register'))
+
+        hashed_password = generate_password_hash(password)
+        is_admin = username in ['Peggy2005', 'Peter2005']
+        user = User(username=username, password_hash=hashed_password, is_approved=is_admin, is_admin=is_admin)
+        db.session.add(user)
+        db.session.commit()
+
+        flash('註冊完成，等待管理員審核' if not is_admin else '管理員帳號建立成功')
+        return redirect(url_for('auth.login'))
 
     return render_template('register.html')
 
 
-# 登入
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -60,13 +40,17 @@ def login():
             flash('帳號或密碼錯誤')
             return redirect(url_for('auth.login'))
 
+        if not user.is_approved:
+            flash('帳號尚未被管理員審核')
+            return redirect(url_for('auth.login'))
+
         login_user(user)
         flash('登入成功')
         return redirect(url_for('home'))
 
     return render_template('login.html')
 
-# 登出
+
 @auth_bp.route('/logout')
 @login_required
 def logout():
@@ -74,7 +58,7 @@ def logout():
     flash('您已登出')
     return redirect(url_for('auth.login'))
 
-# 修改密碼
+
 @auth_bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -92,3 +76,28 @@ def change_password():
         return redirect(url_for('home'))
 
     return render_template('change_password.html')
+
+
+@auth_bp.route('/admin/approval')
+@login_required
+def admin_approval():
+    if not current_user.is_admin:
+        flash('只有管理員可以查看此頁面')
+        return redirect(url_for('home'))
+
+    pending_users = User.query.filter_by(is_approved=False).all()
+    return render_template('admin_approval.html', users=pending_users)
+
+
+@auth_bp.route('/admin/approve/<int:user_id>')
+@login_required
+def approve_user(user_id):
+    if not current_user.is_admin:
+        flash('只有管理員可以操作')
+        return redirect(url_for('home'))
+
+    user = User.query.get_or_404(user_id)
+    user.is_approved = True
+    db.session.commit()
+    flash(f'{user.username} 已通過審核')
+    return redirect(url_for('auth.admin_approval'))
