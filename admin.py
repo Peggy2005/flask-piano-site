@@ -12,7 +12,7 @@ def approve_users():
         return redirect(url_for('home'))
 
     pending_users = User.query.filter_by(is_approved=False, is_admin=False).all()
-    return render_template('approve_users.html', users=pending_users)
+    return render_template('admin_approval.html', users=pending_users)
 
 @admin_bp.route('/approve/<int:user_id>')
 @login_required
