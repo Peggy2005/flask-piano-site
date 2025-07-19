@@ -13,26 +13,14 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_approved = db.Column(db.Boolean, default=False)
-    is_admin = db.Column(db.Boolean, default=False)  # 可選擇是否為管理員
+    is_admin = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f'<User {self.username}>'
 
 
-class VerificationCode(db.Model):
-    __tablename__ = 'verification_codes'
-
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(32), unique=True, nullable=False)
-    used = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<VerificationCode {self.code}>'
-
-
 class Sheet(db.Model):
-    __tablename__ = 'pdfs'
+    __tablename__ = 'sheets'  # ✅ 修正為與 init.sql 對應
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -42,7 +30,7 @@ class Sheet(db.Model):
     uploader_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    uploader = db.relationship('User', backref='pdfs')
+    uploader = db.relationship('User', backref='sheets')  # ✅ 也同步改為 sheets
 
     def __repr__(self):
         return f'<Sheet {self.title} by {self.author}>'
