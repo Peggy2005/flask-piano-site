@@ -37,12 +37,14 @@ from auth import auth_bp
 from upload import upload_bp
 from search import search_bp
 from admin import admin_bp
+from admin_sheets import admin_sheet_bp
 
 # 註冊藍圖
 app.register_blueprint(auth_bp)
 app.register_blueprint(upload_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(admin_sheet_bp)
 
 # 首頁路由
 @app.route('/')

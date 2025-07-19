@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}管理譜面{% endblock %}
+{% block content %}
+<h2>所有樂譜</h2>
+<table class="table mt-3">
+  <thead><tr><th>標題</th><th>作者</th><th>操作</th></tr></thead>
+  <tbody>
+    {% for sheet in sheets %}
+      <tr>
+        <td>{{ sheet.title }}</td>
+        <td>{{ sheet.author }}</td>
+        <td>
+          <a href="{{ url_for('admin_sheet.edit_sheet', sheet_id=sheet.id) }}" class="btn btn-sm btn-warning">編輯</a>
+          <form action="{{ url_for('admin_sheet.delete_sheet', sheet_id=sheet.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('確定刪除？')">刪除</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

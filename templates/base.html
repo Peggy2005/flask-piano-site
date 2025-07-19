@@ -9,22 +9,28 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">🎹 Piano Sheets</a>
+      <a class="navbar-brand" href="{{ url_for('home') }}">🎹 Piano Sheets</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="/upload">上傳樂譜</a></li>
-          <li class="nav-item"><a class="nav-link" href="/search">搜尋樂譜</a></li>
-          <li class="nav-item"><a class="nav-link" href="/dashboard">我的樂譜</a></li>
+          {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('upload.upload') }}">上傳樂譜</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('search.search') }}">搜尋樂譜</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('search.search') }}">我的樂譜</a></li>
+            {% if current_user.is_admin %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.admin_approval') }}">帳號審核</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_sheets') }}">管理譜面</a></li>
+            {% endif %}
+          {% endif %}
         </ul>
         <ul class="navbar-nav">
           {% if current_user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="/logout">登出</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">登出</a></li>
           {% else %}
-            <li class="nav-item"><a class="nav-link" href="/login">登入</a></li>
-            <li class="nav-item"><a class="nav-link" href="/register">註冊</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">登入</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">註冊</a></li>
           {% endif %}
         </ul>
       </div>
@@ -35,7 +41,6 @@
     {% block content %}{% endblock %}
   </div>
 
-  <!-- 加上 Bootstrap 的 JS 讓 navbar toggle 有效 -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

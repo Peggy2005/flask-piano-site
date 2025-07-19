@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}編輯樂譜{% endblock %}
+{% block content %}
+<h2>編輯樂譜：{{ sheet.title }}</h2>
+<form method="POST">
+  <div class="mb-3">
+    <label class="form-label">標題</label>
+    <input type="text" name="title" class="form-control" value="{{ sheet.title }}" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">作者</label>
+    <input type="text" name="author" class="form-control" value="{{ sheet.author }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">歌詞</label>
+    <textarea name="lyrics" class="form-control">{{ sheet.lyrics }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">儲存修改</button>
+</form>
+{% endblock %}
