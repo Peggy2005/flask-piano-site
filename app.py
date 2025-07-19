@@ -8,10 +8,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 初始化 Flask app
+# 初始化 Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'default-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# ✅ 新增 bcrypt 初始化
+from flask_bcrypt import Bcrypt
+bcrypt = Bcrypt(app)
 
 # 匯入 models 裡的 db（延遲初始化，並於下方 init_app）
 from models import db, User

@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_bcrypt import Bcrypt
 from models import db, User
 
 auth_bp = Blueprint('auth', __name__)
+bcrypt = Bcrypt()  # 注意：app.py 也應該有 bcrypt = Bcrypt(app)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -15,7 +16,7 @@ def register():
             flash('帳號名稱已被使用')
             return redirect(url_for('auth.register'))
 
-        hashed_password = generate_password_hash(password)
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         is_admin = username in ['Peggy2005', 'Peter2005']
         user = User(username=username, password_hash=hashed_password, is_approved=is_admin, is_admin=is_admin)
         db.session.add(user)
@@ -34,7 +35,7 @@ def login():
         password = request.form['password']
 
         user = User.query.filter_by(username=username).first()
-        if not user or not check_password_hash(user.password_hash, password):
+        if not user or not bcrypt.check_password_hash(user.password_hash, password):
             flash('帳號或密碼錯誤')
             return redirect(url_for('auth.login'))
 
@@ -64,11 +65,11 @@ def change_password():
         current_password = request.form['current_password']
         new_password = request.form['new_password']
 
-        if not check_password_hash(current_user.password_hash, current_password):
+        if not bcrypt.check_password_hash(current_user.password_hash, current_password):
             flash('目前密碼錯誤')
             return redirect(url_for('auth.change_password'))
 
-        current_user.password_hash = generate_password_hash(new_password)
+        current_user.password_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
         db.session.commit()
         flash('密碼已更新')
         return redirect(url_for('home'))
