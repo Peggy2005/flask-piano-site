@@ -1,11 +1,17 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from models import db, User
-from config import Config
+
+# 確保正確讀取 .env 檔案
+load_dotenv(dotenv_path='.env')
 
 # 初始化 Flask app
 app = Flask(__name__)
-app.config.from_object(Config)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # 初始化 DB & Bcrypt
 db.init_app(app)
@@ -21,7 +27,6 @@ with app.app_context():
     db.create_all()
 
     for admin in admins:
-        # 檢查是否已存在
         existing = User.query.filter_by(username=admin["username"]).first()
         if existing:
             print(f"{admin['username']} 已存在，跳過")
@@ -31,12 +36,12 @@ with app.app_context():
         user = User(
             username=admin["username"],
             password_hash=hashed_pw,
-            email=None,
+            email="",  # 空字串比 None 安全
             is_approved=True,
             is_admin=True
         )
         db.session.add(user)
-        print(f"新增管理員：{admin['username']}")
+        print(f"✅ 新增管理員：{admin['username']}")
 
     db.session.commit()
-    print("初始化完成 ✅")
+    print("✅ 初始化完成")
