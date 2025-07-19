@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from models import db, Sheet, User
 from config import Config
 
-upload_bp = Blueprint('dashboard', __name__)
+upload_bp = Blueprint('upload', __name__)
 
 # 初始化 S3 client
 s3 = boto3.client(
