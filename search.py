@@ -1,6 +1,6 @@
 import boto3
 from flask import Blueprint, render_template, request, redirect, flash
-from models import Sheet
+from models import db, Sheet
 from config import Config
 
 search_bp = Blueprint('search', __name__)
